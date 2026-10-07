@@ -1,21 +1,7 @@
-# LillyTech OnboardFlow v0.5
+# LillyTech OnboardFlow V3
 
-## Archivos
-- `candidate.html`: experiencia completa del candidato.
-- `supervisor.html`: validación de elegibilidad y envío a RH.
-- `admin-login.html`: acceso administrativo de demostración.
-- `admin.html`: RH, elegibilidad, inducción y empresas.
-- `sql/01_onboardflow_v0.5.sql`: esquema para Supabase general.
-- `docs/ALCANCE_V0.5.md`: alcance funcional.
+Versión de prueba del portal: https://lillianaretana-tech.github.io/Onboardingflow_V3/
 
-## Demostración
-- Código candidato: `K7MR-42`
-- Contraseña admin: `LillyTech2026`
+RH-F-56 → entrevista → 15 videos → RH-F-55 → documentación / INS → contratación.
 
-## Pruebas de elegibilidad en supervisor.html
-- Cédula terminada en `999`: no elegible.
-- Cédula terminada en `555`: revisión RH.
-- Cualquier otra: apto para continuar.
-
-## Importante
-Esta versión es un prototipo funcional con datos simulados. No usar con datos reales hasta conectar Supabase Auth, completar RLS por rol y probar las políticas.
+Este repositorio contiene únicamente el frontend público. Los expedientes, videos y respuestas oficiales permanecen en el backend privado de V3. Las versiones anteriores se conservan en el historial Git. V2 no forma parte de esta publicación.

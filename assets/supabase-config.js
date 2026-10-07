@@ -1,4 +1,0 @@
-window.ONBOARDFLOW_SUPABASE={
-  url:'https://jslcmzrbonurhsdzuwyx.supabase.co',
-  anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzbGNtenJib251cmhzZHp1d3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NDUyMTEsImV4cCI6MjA5NzAyMTIxMX0.QTjZfJlxaYiY1CxJWbKbCyFwL--kxbDpVRzwxsCDGwc'
-};
