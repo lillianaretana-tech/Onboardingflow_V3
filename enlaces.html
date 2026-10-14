@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Enlaces de capacitación · OnboardFlow</title>
+<link rel="stylesheet" href="styles.css">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js"></script></head>
+<body><header><a class="brand" href="./"><span class="mark">L</span><span>LillyTech<small>ENLACES DE CAPACITACIÓN</small></span></a><div id="identity"></div></header>
+<main id="app"><p>Cargando…</p></main><div id="notice" role="status" aria-live="polite"></div>
+<script>
+'use strict';
+const app=document.querySelector('#app');
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sb=()=>window.supabase.createClient('https://yqmikjzwdyssmfqganbf.supabase.co','sb_publishable_FyeGXa_Zr32ZA3xIJGZkww_Ly91Tm2f',{auth:{persistSession:true,autoRefreshToken:true,storageKey:'onboardflow-v3-auth'}});
+let db;
+function notify(m,err){const n=document.querySelector('#notice');n.textContent=m;n.className=err?'error':'';n.style.display='block';clearTimeout(notify.t);notify.t=setTimeout(()=>n.style.display='none',7000)}
+async function rpc(n,a){const {data,error}=await db.rpc(n,a);if(error)throw error;return data}
+const base=()=>location.href.replace(/[^/]*$/,'')+'curso.html?t=';
+const fmt=d=>d?new Date(d).toLocaleString('es-CR',{timeZone:'America/Costa_Rica'}):'—';
+function loginView(){app.innerHTML=`<section class="login"><h1>Acceso RH.</h1><form class="card" id="login"><label>Correo<input name="email" type="email" required></label><label>Contraseña<input name="password" type="password" required></label><button>Ingresar</button></form></section>`}
+async function main(){
+  const links=await rpc('of3c_links_list');
+  document.querySelector('#identity').innerHTML='<button type="button" class="secondary" data-out>Cerrar sesión</button>';
+  app.innerHTML=`<div class="eyebrow">Capacitación por enlace</div><h1>Enlaces para enviar.</h1><p class="muted">Cada enlace lleva a los videos en orden y al final abre la evaluación. No requiere cuenta.</p>
+  <form class="card" id="new"><h2>Nuevo enlace</h2><label>Nombre del grupo o proyecto<input name="title" required minlength="3" placeholder="Ej. Ingreso Octubre · UBER COE"></label><label>Enlace del formulario de evaluación (Google Forms)<input name="form" type="url" placeholder="https://forms.gle/..."></label><button>Crear enlace</button></form>
+  <section class="card"><h2>Mis enlaces</h2>${links.map(l=>`<article class="doc"><h3>${esc(l.title)} ${l.active?'':'<span class="pill closed">Desactivado</span>'}</h3><small>${l.started} iniciaron · ${l.finished} terminaron los videos · creado ${fmt(l.created_at)}</small><p><input readonly value="${esc(base()+l.token)}" onfocus="this.select()"></p><div class="row"><button type="button" data-copy="${l.token}">Copiar enlace</button><button type="button" class="secondary" data-res="${l.token}">Ver avance</button><button type="button" class="secondary" data-toggle="${l.token}" data-active="${l.active}">${l.active?'Desactivar':'Activar'}</button></div><div id="r-${l.token}"></div></article>`).join('')||'<p class="muted">Todavía no hay enlaces.</p>'}</section>`;
+}
+document.addEventListener('submit',async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target));const b=e.target.querySelector('button');b.disabled=true;
+  try{if(e.target.id==='login'){const {error}=await db.auth.signInWithPassword(f);if(error)throw error;await main()}
+  else if(e.target.id==='new'){const t=await rpc('of3c_create_link',{p_title:f.title,p_form_url:f.form||null});await main();try{await navigator.clipboard.writeText(base()+t);notify('Enlace creado y copiado.')}catch{notify('Enlace creado.')}}}
+  catch(err){notify(err.message,true);b.disabled=false}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;
+  try{if('out' in b.dataset){await db.auth.signOut();loginView();document.querySelector('#identity').innerHTML=''}
+  else if(b.dataset.copy){const u=base()+b.dataset.copy;try{await navigator.clipboard.writeText(u);notify('Enlace copiado.')}catch{prompt('Copiá el enlace:',u)}}
+  else if(b.dataset.toggle){await rpc('of3c_set_active',{p_token:b.dataset.toggle,p_active:b.dataset.active!=='true'});await main()}
+  else if(b.dataset.res){const r=await rpc('of3c_results',{p_token:b.dataset.res});document.querySelector('#r-'+b.dataset.res).innerHTML=r.length?`<table style="width:100%;margin-top:12px"><tr><th align=left>Nombre</th><th align=left>Cédula</th><th>Videos</th><th align=left>Terminó</th></tr>${r.map(x=>`<tr><td>${esc(x.full_name)}</td><td>${esc(x.document_id)}</td><td align=center>${x.videos_done}</td><td>${fmt(x.finished_at)}</td></tr>`).join('')}</table>`:'<p class="muted">Nadie ha iniciado todavía.</p>'}}
+  catch(err){notify(err.message,true)}});
+window.addEventListener('load',async()=>{db=sb();try{const {data}=await db.auth.getSession();if(!data.session)return loginView();await main()}catch(e){loginView();notify(e.message,true)}});
+</script></body></html>
